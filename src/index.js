@@ -8,13 +8,22 @@ class Note extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
+        this.state = [
+            {
             "userName": "Author",
             "id": 1,
-            "date": "16. 10. 2019",
+            "date": "15. 10. 2019",
             "title": "Test 1",
             "url": "/test-1"
-        };
+            },
+            {
+                "userName": "Author",
+                "id": 2,
+                "date": "16. 10. 2019",
+                "title": "Test 2",
+                "url": "/test-2"
+            }
+        ]
     }
 
     render() {
