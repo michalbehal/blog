@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './index.scss';
+
+
 
 class Note extends React.Component {
 
@@ -10,17 +12,18 @@ class Note extends React.Component {
             "userName": "Author",
             "id": 1,
             "date": "16. 10. 2019",
-            "title": "Test 1"
+            "title": "Test 1",
+            "url": "/test-1"
         };
     }
 
     render() {
         return (
-            <div className="simple-post" onClick={() => alert('click')}>
-                <div class="post-id">{this.state.id}</div>
-                <div class="post-date">{this.state.date}</div>
-                <div class="post-title">{this.state.title}</div>
-                <div class="post-author">{this.state.userName}</div>
+            <div className="simple-post">
+                <div class="post-id col-1">{this.state.id}</div>
+                <div class="post-date col-2">{this.state.date}</div>
+                <div class="post-title col-7"><a href={this.state.url}>{this.state.title}</a></div>
+                <div class="post-author col-2">by {this.state.userName}</div>
             </div>
         );
     }  

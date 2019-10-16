@@ -1,0 +1,40 @@
+@import '~bootstrap/scss/bootstrap.scss';
+
+$body-bg: #fff;
+
+body {
+    margin: 20px;
+}
+
+ul {
+    padding: 20px 0;
+
+    li {
+        display: inline-block;
+        padding: 5px 15px;
+        list-style: none;
+        margin: 0 0.5px;
+        background: #f2f2f2;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+    }
+
+    li:hover {
+        background: #000;
+        color: #fff;
+    }
+
+    li.active {
+        background: #000;
+        color: #fff;
+    }
+}
+
+.simple-post {
+    font-size: 16px;
+    display: block;
+    width: 100%;
+    display: flex;
+}
