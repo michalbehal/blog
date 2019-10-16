@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
+
+const API = 'https://hn.algolia.com/api/v1/search?query=';
+const DEFAULT_QUERY = 'redux';
 
 
 
@@ -8,34 +11,30 @@ class Note extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = [
+        this.state =
             {
-            "userName": "Author",
-            "id": 1,
-            "date": "15. 10. 2019",
-            "title": "Test 1",
-            "url": "/test-1"
-            },
-            {
-                "userName": "Author",
-                "id": 2,
-                "date": "16. 10. 2019",
-                "title": "Test 2",
-                "url": "/test-2"
+                hits: null
             }
-        ]
     }
 
+    componentDidMount() {
+    fetch(API + DEFAULT_QUERY)
+      .then(response => response.json())
+      .then(data => this.setState({ hits: data.hits }));
+  }
+
     render() {
+        const { hits } = this.state;
         return (
-            <div className="simple-post">
-                <div class="post-id col-1">{this.state.id}</div>
-                <div class="post-date col-2">{this.state.date}</div>
-                <div class="post-title col-7"><a href={this.state.url}>{this.state.title}</a></div>
-                <div class="post-author col-2">by {this.state.userName}</div>
-            </div>
+            <ul>
+                {hits.map(hit =>
+                    <li key={hit.objectID}>
+                        <a href={hit.url}>{hit.title}</a>
+                    </li>
+                )}
+            </ul>
         );
-    }  
+    } 
 }
 
 class List extends React.Component {
@@ -45,7 +44,7 @@ class List extends React.Component {
     }
 
     render() {
-        const status = 'Choose option';
+        const status = 'All notes';
 
         return (
             <div>
@@ -118,7 +117,7 @@ class Blog extends React.Component {
 // ========================================
 
 ReactDOM.render(
-  <Blog />,
+  <Note />,
   document.getElementById('root')
 );
 
