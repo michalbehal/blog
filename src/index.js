@@ -1,110 +1,111 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
 
-const API = 'https://hn.algolia.com/api/v1/search?query=';
-const DEFAULT_QUERY = 'redux';
 
 
 
-class Note extends React.Component {
+class List extends React.Component {
 
     constructor(props) {
         super(props);
         this.state =
             {
-                hits: null
+            posts: [],
+            singlePost: [],
+            status: null,
+            myId: 1
             }
+        this.renderAllNotes = this.renderAllNotes.bind(this);
+        this.getId = this.getId.bind(this);
     }
 
-    componentDidMount() {
-    fetch(API + DEFAULT_QUERY)
-      .then(response => response.json())
-      .then(data => this.setState({ hits: data.hits }));
-  }
 
-    render() {
-        const { hits } = this.state;
-        return (
-            <ul>
-                {hits.map(hit =>
-                    <li key={hit.objectID}>
-                        <a href={hit.url}>{hit.title}</a>
-                    </li>
-                )}
-            </ul>
-        );
-    } 
-}
+    renderAllNotes() {
+        fetch('https://jsonplaceholder.typicode.com/posts')
+            .then(response => response.json())
+            .then(data => this.setState({ posts: data }));
 
-class List extends React.Component {
-
-  renderNote(i) {
-      return <Note value={this.props.value} />;
-    }
-
-    render() {
+        const { posts } = this.state;
         const status = 'All notes';
 
         return (
             <div>
-                <div className="status">{status}</div>
-            <div className="blog-list">
-                {this.renderNote(0)}
-                    {this.renderNote(1)}
-                    {this.renderNote(2)}
-            </div>
+            <div className="status">{status}</div>
+                <ul class="posts">
+                    {posts.map(post => 
+                            <li key={post.id}>
+                            <a href={post.title}>{post.title}</a>
+                            </li>
+             )}
+                </ul>
+            </div >
+      );
+    }
+
+    renderOneNote(i) {
+        const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => this.setState({ singlePost: data }));
+
+        const { singlePost } = this.state;
+        const status = 'One note';
+
+        return (
+            <div>
+                <div className="status">{status} - {i}</div>
+                <ul class="posts">
+                    <li key={singlePost.id}>
+                            <a href={singlePost.title}>{singlePost.title}</a>
+                            </li>
+                </ul>
+            </div >
+        );
+    }
+
+    onChange(field, value) {
+        this.setState({ myId: value });
+    }
+    
+
+    getId() {
+        return (
+            <div>
+                <div className="apop"><div className="apopbg"></div>
+                    <div className="apopcontent">
+                        <input type="text" placeholder="Enter post ID" onChange={this.onChange.bind(this)} />
+                        <input type="submit" value="Submit" onClick={this.renderOneNote(this.state.myId)} /></div>
+                </div>
+            </div >
+        );
+    }
+
+    render() {
+
+        return (
+                <div>
+                    <div className="blog-menu">
+                    <div className="menu">
+                        <ul>
+                            <li className="menu-item" onClick={this.renderAllNotes}>Get all notes</li>
+                            <li className="menu-item" onClick={this.getId}>Get note by ID</li>
+                            <li className="menu-item">Post notes</li>
+                            <li className="menu-item">Put note by ID</li>
+                            <li className="menu-item">Delete note by ID</li>
+                        </ul>
+                        </div>
+                    </div>
+                <div className="blog-list">
+                </div>
             </div >
     );
     }
 }
-
-class Item extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            value: null,
-        };
-    }
-    render() {
-        return (
-            <li className="menu-item" onClick={() => this.setState({ value: 'clicked' })}>
-                {this.props.value}
-            </li>
-        );
-    }
-}
-
-class Menu extends React.Component {
-
-    renderItem(i) {
-        return <Item value={i} />;
-    }
-
-    render() {
-        return (
-            <div>
-                <div className="menu">
-                    <ul>
-                        {this.renderItem('Get all notes')}
-                        {this.renderItem('Get note by ID')}
-                        {this.renderItem('Post notes')}
-                        {this.renderItem('Put note by ID')}
-                        {this.renderItem('Delete note by ID')}
-                        </ul>
-                </div>
-            </div >
-        );
-    }
-}
-
 class Blog extends React.Component {
     render() {
         return (
             <div className="blog">
-                <div className="blog-menu">
-                    <Menu />
-                </div>
                 <div className="blog-body">
                     <List />
                 </div>
@@ -117,8 +118,12 @@ class Blog extends React.Component {
 // ========================================
 
 ReactDOM.render(
-  <Note />,
+  <Blog />,
   document.getElementById('root')
 );
+
+
+
+
 
 
