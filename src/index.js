@@ -29,7 +29,8 @@ class List extends React.Component {
             showOk: false,
             showEdit: false,
             showEditBoard: false,
-            showChange: false
+            showChange: false,
+            looper: true
             }
         this.renderAllNotes = this.renderAllNotes.bind(this);
         this.renderOneNote = this.renderOneNote.bind(this);
@@ -108,54 +109,61 @@ class List extends React.Component {
     }
 
     renderPostForEdit(i) {
-        const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
-        fetch(url)
-            .then(response => response.json())
-            .then(data => this.setState({ singlePost: data }));
+        if (this.state.looper) {
+            console.warn(i);
+            const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => this.setState({ singlePost: data }));
 
-        const { singlePost } = this.state;
+            const { singlePost } = this.state;
+            console.log(singlePost);
 
-        if (Object.keys(singlePost).length === 0) {
-            const status = 'Note ID ' + i + ' not found';
+            if (Object.keys(singlePost).length === 0) {
+                const status = 'Note ID ' + i + ' not found';
 
-            return (
-                <div>
-                    <div className="status">{status}</div>
-                </div >
-            );
+                return (
+                    <div>
+                        <div className="status">{status}</div>
+                    </div >
+                );
 
-        } else {
-            if (Object.keys(this.state.newPostTitle).length === 0) {
-                this.setState({
-                    newPostTitle: singlePost.title,
-                    newPostBody: singlePost.body,
-                    newPostUserId: singlePost.userId
-                });
+            } else {
+                    this.setState({
+                        newPostTitle: singlePost.title,
+                        newPostBody: singlePost.body,
+                        newPostUserId: singlePost.userId
+                    });
             }
+            this.setState({
+                looper: false
+            });
+        } else {
 
             return (
                 <div>
                     <div className="apop postpop"><div className="apopbg"></div>
                         <div className="apopcontent">
                             <span>Currently editing note with ID {i}</span>
-                            <div class="form">
+                            <div className="form">
                                 <input type="text" placeholder="Enter post title" onChange={this.setTitle} value={this.state.newPostTitle} />
                                 <input type="text" placeholder="Enter post author" onChange={this.setUserId} value={this.state.newPostUserId} />
                                 <textarea placeholder="Enter post content" onChange={this.setBody} value={this.state.newPostBody} />
 
-                            {this.state.showFill ?
-                                <div className="result wrong">Please fill all fields to submit a note</div> :
-                                null
-                            }
-                            {this.state.showOk ?
-                                <div className="result correct">Note was successfully changed</div> :
-                                null
-                            }
+                                {this.state.showFill ?
+                                    <div className="result wrong">Please fill all fields to submit a note</div> :
+                                    null
+                                }
+                                {this.state.showOk ?
+                                    <div className="result correct">Note was successfully changed</div> :
+                                    null
+                                }
                                 <button onClick={this._onEditPostClick}>Submit</button></div>
                         </div >
                     </div>
                 </div >
             );
+
         }
     }
 
@@ -386,7 +394,8 @@ class List extends React.Component {
             showChange: false,
             newPostTitle: '',
             newPostBody: '',
-            newPostUserId: ''
+            newPostUserId: '',
+            looper: true
         });
     }
 
