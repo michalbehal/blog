@@ -30,7 +30,10 @@ class List extends React.Component {
             showEdit: false,
             showEditBoard: false,
             showChange: false,
-            looper: true
+            looper: true,
+            nooper: true,
+            looper2: false,
+            showAllEdit: false
             }
         this.renderAllNotes = this.renderAllNotes.bind(this);
         this.renderOneNote = this.renderOneNote.bind(this);
@@ -49,6 +52,7 @@ class List extends React.Component {
         this._onPopEditClick = this._onPopEditClick.bind(this);
         this._onEditIdClick = this._onEditIdClick.bind(this);
         this._onEditPostClick = this._onEditPostClick.bind(this);
+        this.allEdit = this.allEdit.bind(this);
         this.setId = this.setId.bind(this);
         this.setTitle = this.setTitle.bind(this);
         this.setBody = this.setBody.bind(this);
@@ -114,58 +118,72 @@ class List extends React.Component {
             const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
             fetch(url)
                 .then(response => response.json())
-                .then(data => this.setState({ singlePost: data }));
+                .then(data => {
+                    this.setState({ singlePost: data })
 
             const { singlePost } = this.state;
-            console.log(singlePost);
+                    console.log(singlePost);
 
-            if (Object.keys(singlePost).length === 0) {
-                const status = 'Note ID ' + i + ' not found';
 
-                return (
-                    <div>
-                        <div className="status">{status}</div>
-                    </div >
-                );
+                    if (Object.keys(singlePost).length === 0) {
 
-            } else {
-                    this.setState({
-                        newPostTitle: singlePost.title,
-                        newPostBody: singlePost.body,
-                        newPostUserId: singlePost.userId
-                    });
-            }
-            this.setState({
-                looper: false
-            });
-        } else {
+                        if (this.state.nooper) {
+                            this.setState({
+                                singlePost: [],
+                                looper: false,
+                                nooper: false,
+                                showAllEdit: true
+                            });
+                        }
 
-            return (
-                <div>
-                    <div className="apop postpop"><div className="apopbg"></div>
-                        <div className="apopcontent">
-                            <span>Currently editing note with ID {i}</span>
-                            <div className="form">
-                                <input type="text" placeholder="Enter post title" onChange={this.setTitle} value={this.state.newPostTitle} />
-                                <input type="text" placeholder="Enter post author" onChange={this.setUserId} value={this.state.newPostUserId} />
-                                <textarea placeholder="Enter post content" onChange={this.setBody} value={this.state.newPostBody} />
-
-                                {this.state.showFill ?
-                                    <div className="result wrong">Please fill all fields to submit a note</div> :
-                                    null
-                                }
-                                {this.state.showOk ?
-                                    <div className="result correct">Note was successfully changed</div> :
-                                    null
-                                }
-                                <button onClick={this._onEditPostClick}>Submit</button></div>
-                        </div >
-                    </div>
-                </div >
+                    } else {
+                        this.setState({
+                            newPostTitle: singlePost.title,
+                            newPostBody: singlePost.body,
+                            newPostUserId: singlePost.userId,
+                            looper: false,
+                            showAllEdit: true
+                        });
+                    }
+                }
             );
-
         }
     }
+    
+    allEdit() {
+
+            if (this.state.nooper) {
+                return (
+                    <div>
+                        <div className="apop postpop"><div className="apopbg"></div>
+                            <div className="apopcontent">
+                                <span>Currently editing note with ID {this.state.myId}</span>
+                                <div className="form">
+                                    <input type="text" placeholder="Enter post title" onChange={this.setTitle} value={this.state.newPostTitle} />
+                                    <input type="text" placeholder="Enter post author" onChange={this.setUserId} value={this.state.newPostUserId} />
+                                    <textarea placeholder="Enter post content" onChange={this.setBody} value={this.state.newPostBody} />
+
+                                    {this.state.showFill ?
+                                        <div className="result wrong">Please fill all fields to submit a note</div> :
+                                        null
+                                    }
+                                    {this.state.showOk ?
+                                        <div className="result correct">Note was successfully changed</div> :
+                                        null
+                                    }
+                                    <button onClick={this._onEditPostClick}>Submit</button></div>
+                            </div >
+                        </div>
+                    </div >
+                );
+            } else {
+                return (
+                    <div>
+                        <div className="status">Note ID {this.state.myId} not found</div>
+                    </div >
+                );
+            }
+        }
 
     renderSmashedPost(i) {
 
@@ -365,6 +383,7 @@ class List extends React.Component {
             newPostBody: '',
             newPostUserId: '',
             showFill: false,
+            looper: true,
             showOk: false
         });
     }
@@ -390,13 +409,14 @@ class List extends React.Component {
     _onEditIdClick() {
         this.setState({
             showEdit: false,
-            showEditBoard: true,
             showChange: false,
             newPostTitle: '',
             newPostBody: '',
             newPostUserId: '',
-            looper: true
+            looper: true,
+            nooper: true
         });
+        this.renderPostForEdit(this.state.myId) 
     }
 
     _onPostPopClick() {
@@ -452,6 +472,7 @@ class List extends React.Component {
                     this.setState({
                         showEdit: false,
                         showEditBoard: false,
+                        showAllEdit: false,
                         showChange: true
                     });
                 }
@@ -524,6 +545,10 @@ class List extends React.Component {
                     }
                     {this.state.showEditBoard ?
                         this.renderPostForEdit(this.state.myId) :
+                        null
+                    }
+                    {this.state.showAllEdit ?
+                        this.allEdit() :
                         null
                     }
 

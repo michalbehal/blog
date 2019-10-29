@@ -84,6 +84,7 @@ ul.posts {
 
     .apopcontent {
         width: 300px;
+        max-width: 90%;
         height: 100px;
         padding-top: 35px;
         background: #fff;
@@ -122,7 +123,7 @@ ul.posts {
 }
 
 .apop.postpop .apopcontent {
-    width: 100%;
+    width: 90%;
     max-width: 600px;
     height: auto;
     text-align: left;
@@ -177,3 +178,52 @@ ul.posts {
         margin-bottom: 10px;
     }
 }
+
+
+@media (max-width: 800px) {
+
+    body {
+        font-size: 0.8rem;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+    }
+
+    .menu {
+        ul {
+            li {
+                display: block;
+                width: 100%;
+                text-align: center;
+                margin: 0.5px 0;
+                font-size: 11px;
+            }
+        }
+    }
+
+    .apop .apopcontent {
+        width: 240px;
+        height: 80px;
+        padding-top: 25px;
+
+        input, textarea {
+            font-size: 11px !important;
+        }
+
+        button, .result, span {
+            font-size: 11px !important;
+        }
+    }
+
+    .postpop .apopcontent {
+        input, textarea {
+            width: 100% !important;
+            margin-right: 0 !important;
+            margin: 0 0 10px 0 !important;
+        }
+    }
+
+
+    }
