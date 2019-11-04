@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
-import { BrowserRouter as Router, Route, Link, Switch, Redirect } from 'react-router-dom'
 
 
 
@@ -31,16 +30,23 @@ class List extends React.Component {
             showEditBoard: false,
             showChange: false,
             looper: true,
+            looperAll: true,
             nooper: true,
             looper2: false,
-            showAllEdit: false
+            showAllEdit: false,
+            showOnlyOne: false,
+            showOnlyDelete: false,
+            justAllShow: false
             }
         this.renderAllNotes = this.renderAllNotes.bind(this);
+        this.justAllNotes = this.justAllNotes.bind(this);
         this.renderOneNote = this.renderOneNote.bind(this);
         this.postNewNote = this.postNewNote.bind(this);
         this.renderNewPreview = this.renderNewPreview.bind(this);
         this.renderChanged = this.renderChanged.bind(this);
         this.renderPostForEdit = this.renderPostForEdit.bind(this);
+        this.oneNoteOnly = this.oneNoteOnly.bind(this);
+        this.deletedNoteOnly = this.deletedNoteOnly.bind(this);
         this.getId = this.getId.bind(this);
         this._onAllClick = this._onAllClick.bind(this);
         this._onPopClick = this._onPopClick.bind(this);
@@ -61,56 +67,87 @@ class List extends React.Component {
 
 
     renderAllNotes() {
-        fetch('https://jsonplaceholder.typicode.com/posts')
-            .then(response => response.json())
-            .then(data => this.setState({ posts: data }));
+        if (this.state.looperAll) {
+            fetch('https://jsonplaceholder.typicode.com/posts')
+                .then(response => response.json())
+                .then(data => {
+                    this.setState({ posts: data })
+                    this.setState({ justAllShow: true, looperAll: false })
+                    console.log(this.state.posts);
+                }
+                );
+    }
+    }
 
-        const { posts } = this.state;
-        const status = 'All notes';
 
+    justAllNotes() {
         return (
             <div>
-            <div className="status">{status}</div>
+                <div className="status">All notes</div>
                 <ul className="posts">
-                    {posts.map(post => 
-                            <li key={post.id}>
+                    {this.state.posts.map(post =>
+                        <li key={post.id}>
                             <a href={post.id}>{post.title}</a>
-                            </li>
-             )}
+                        </li>
+                    )}
                 </ul>
-                </div>
-            );
+            </div>
+        );
     }
 
     renderOneNote(i) {
-        const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
-        fetch(url)
-            .then(response => response.json())
-            .then(data => this.setState({ singlePost: data }));
+        if (this.state.looper) {
+            console.warn(i);
+            const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    this.setState({ singlePost: data })
 
-        const { singlePost } = this.state;
+                    const { singlePost } = this.state;
+                    console.log(singlePost);
 
-        if (Object.keys(singlePost).length === 0) {
-            const status = 'Note ID ' + i + ' not found';
 
-            return (
-                <div>
-                    <div className="status">{status}</div>
-                </div >
-                );
+                    if (Object.keys(singlePost).length === 0) {
+                        this.setState({
+                            singlePost: [],
+                            looper: false,
+                            nooper: false,
+                            showOnlyOne: true
+                        });
+                    } else {
+                        this.setState({
+                            newPostTitle: singlePost.title,
+                            newPostBody: singlePost.body,
+                            newPostUserId: singlePost.userId,
+                            looper: false,
+                            showOnlyOne: true
+                        });
+                    }
+                }
+            );
+        }
+    }
 
-        } else {
-        const status = 'Note ID ' + i + ' published by ' + singlePost.userId;
+    oneNoteOnly() {
+        if (this.state.nooper) {
+            const status = 'Note ID ' + this.state.myId + ' published by ' + this.state.newPostUserId;
 
         return (
             <div>
                 <div className="status">{status}</div>
-                <h1 key={singlePost.id}>{singlePost.title}</h1>
-                <div className="postContent">{singlePost.body}</div>
+                <h1 key={this.state.newPostUserId}>{this.state.newPostTitle}</h1>
+                <div className="postContent">{this.state.newPostBody}</div>
             </div >
             );
-        }
-    }
+        } else {
+    return (
+        <div>
+            <div className="status">Note ID {this.state.myId} not found</div>
+        </div >
+    );
+                }   
+            }
 
     renderPostForEdit(i) {
         if (this.state.looper) {
@@ -186,38 +223,54 @@ class List extends React.Component {
         }
 
     renderSmashedPost(i) {
-
+        if (this.state.looper) {
 
         const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
         fetch(url)
             .then(response => response.json())
-            .then(data => this.setState({ singlePost: data }));
+            .then(data => {
+                this.setState({ singlePost: data })
 
         const { singlePost } = this.state;
-        if (Object.keys(singlePost).length === 0) {
-            const status = 'Note ID ' + i + ' not found';
+        console.log(singlePost);
 
-            return (
-                <div>
-                    <div className="status">{status}</div>
-                </div >
-            );
+                if (Object.keys(singlePost).length === 0) {
 
-        } else {
+                    this.setState({
+                        looper: false,
+                        nooper: false,
+                        showOnlyDelete: true
+                    });
+
+                } else {
+
+                    this.setState({
+                        looper: false,
+                        showOnlyDelete: true
+                    });
+
             fetch(url, {
                 method: 'DELETE'
             })
+        }
+            });
+        }
+    }
 
-            const status = 'Note ID ' + i + ' has been deleted';
-
+    deletedNoteOnly() {
+        if (this.state.nooper) {
             return (
                 <div>
-                    <div className="status">{status}</div>
+                    <div className="status">Note ID {this.state.myId} has been deleted</div>
+                </div >
+            );
+        } else {
+            return (
+                <div>
+                    <div className="status">Note ID {this.state.myId} not found</div>
                 </div >
             );
         }
-
-        
     }
 
     renderNewPreview() {
@@ -301,12 +354,12 @@ class List extends React.Component {
                 <div className="apop"><div className="apopbg"></div>
                     <div className="apopcontent">
                         <input type="text" placeholder="Enter post ID" onChange={this.setId} value={this.state.myId}  />
-                        {(i === 'new') ?
+                        { (i === 'new') ?
                             <button onClick={this._onSubClick}>Submit</button>
+                        : (i === 'del') ?
+                            <button onClick={this._onDelClick}>Delete</button>
                         :
-                        (i === 'del') ?
-                        <button onClick={this._onDelClick}>Delete</button>
-                        : <button onClick={this._onEditIdClick}>Submit</button>
+                         <button onClick={this._onEditIdClick}>Edit</button>
                         }
                     </div>    
                 </div>
@@ -343,28 +396,45 @@ class List extends React.Component {
         this.setState({
             showAll: true,
             showDel: false,
-            showSub: false,
+            showOnlyOne: false,
             showSmashed: false,
+            showPreview: false,
+            showOnlyDelete: false,
+            looperAll: true,
+            showChange: false,
+            showAllEdit: false
         });
     }
 
     _onPopClick() {
         this.setState({
-            showAll: false,
+            justAllShow: false,
             showDel: false,
             showSub: false,
             showSmashed: false,
+            showPreview: false,
+            showOnlyDelete: false,
             showPop: true,
+            looper: true,
+            nooper: true,
+            showAllEdit: false,
+            showChange: false,
             myId: ''
         });
     }
 
     _onPopDelClick() {
         this.setState({
-            showAll: false,
+            justAllShow: false,
             showPop: false,
-            showSub: false,
+            showOnlyOne: false,
             showSmashed: false,
+            showAllEdit: false,
+            showOnlyDelete: false,
+            showPreview: false,
+            showChange: false,
+            looper: true,
+            nooper: true,
             showDel: true,
             myId: ''
         });
@@ -372,11 +442,15 @@ class List extends React.Component {
 
     _onPopEditClick() {
         this.setState({
-            showAll: false,
+            justAllShow: false,
             showPop: false,
-            showSub: false,
+            showOnlyOne: false,
             showSmashed: false,
             showDel: false,
+            showAllEdit: false,
+            showOnlyDelete: false,
+            showChange: false,
+            showPreview: false,
             showEdit: true,
             myId: '',
             newPostTitle: '',
@@ -391,9 +465,10 @@ class List extends React.Component {
 
     _onSubClick() {
         this.setState({
-            showAll: false,
+            justAllShow: false,
             showPop: false,
             showDel: false,
+            showPreview: false,
             showSmashed: false,
             showSub: true,
         });
@@ -424,9 +499,13 @@ class List extends React.Component {
             newPostTitle: '',
             newPostBody: '',
             newPostUserId: '',
-            showAll: false,
-            showSub: false,
+            justAllShow: false,
+            showOnlyOne: false,
             showPostPop: true,
+            showAllEdit: false,
+            showOnlyDelete: false,
+            showPreview: false,
+            showChange: false,
             showFill: false,
             showOk: false
         });
@@ -507,6 +586,10 @@ class List extends React.Component {
                         this.renderAllNotes() :
                         null
                     }
+                    {this.state.justAllShow ?
+                        this.justAllNotes() :
+                        null
+                    }
                     {this.state.showPop ?
                         this.getId('new') :
                         null
@@ -549,6 +632,14 @@ class List extends React.Component {
                     }
                     {this.state.showAllEdit ?
                         this.allEdit() :
+                        null
+                    }
+                    {this.state.showOnlyOne ?
+                        this.oneNoteOnly() :
+                        null
+                    }
+                    {this.state.showOnlyDelete ?
+                        this.deletedNoteOnly() :
                         null
                     }
 
