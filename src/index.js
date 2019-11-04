@@ -29,8 +29,10 @@ class List extends React.Component {
             showEdit: false,
             showEditBoard: false,
             showChange: false,
-            looper: true,
+            looperOne: true,
             looperAll: true,
+            looperEdit: true,
+            looperDel: true,
             nooper: true,
             looper2: false,
             showAllEdit: false,
@@ -96,7 +98,7 @@ class List extends React.Component {
     }
 
     renderOneNote(i) {
-        if (this.state.looper) {
+        if (this.state.looperOne) {
             console.warn(i);
             const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
             fetch(url)
@@ -111,7 +113,7 @@ class List extends React.Component {
                     if (Object.keys(singlePost).length === 0) {
                         this.setState({
                             singlePost: [],
-                            looper: false,
+                            looperOne: false,
                             nooper: false,
                             showOnlyOne: true
                         });
@@ -120,7 +122,7 @@ class List extends React.Component {
                             newPostTitle: singlePost.title,
                             newPostBody: singlePost.body,
                             newPostUserId: singlePost.userId,
-                            looper: false,
+                            looperOne: false,
                             showOnlyOne: true
                         });
                     }
@@ -150,7 +152,7 @@ class List extends React.Component {
             }
 
     renderPostForEdit(i) {
-        if (this.state.looper) {
+        if (this.state.looperEdit) {
             console.warn(i);
             const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
             fetch(url)
@@ -167,7 +169,7 @@ class List extends React.Component {
                         if (this.state.nooper) {
                             this.setState({
                                 singlePost: [],
-                                looper: false,
+                                looperEdit: false,
                                 nooper: false,
                                 showAllEdit: true
                             });
@@ -178,7 +180,7 @@ class List extends React.Component {
                             newPostTitle: singlePost.title,
                             newPostBody: singlePost.body,
                             newPostUserId: singlePost.userId,
-                            looper: false,
+                            looperEdit: false,
                             showAllEdit: true
                         });
                     }
@@ -223,7 +225,7 @@ class List extends React.Component {
         }
 
     renderSmashedPost(i) {
-        if (this.state.looper) {
+        if (this.state.looperDel) {
 
         const url = 'https://jsonplaceholder.typicode.com/posts/' + i;
         fetch(url)
@@ -237,7 +239,7 @@ class List extends React.Component {
                 if (Object.keys(singlePost).length === 0) {
 
                     this.setState({
-                        looper: false,
+                        looperDel: false,
                         nooper: false,
                         showOnlyDelete: true
                     });
@@ -245,7 +247,7 @@ class List extends React.Component {
                 } else {
 
                     this.setState({
-                        looper: false,
+                        looperDel: false,
                         showOnlyDelete: true
                     });
 
@@ -354,9 +356,9 @@ class List extends React.Component {
                 <div className="apop"><div className="apopbg"></div>
                     <div className="apopcontent">
                         <input type="text" placeholder="Enter post ID" onChange={this.setId} value={this.state.myId}  />
-                        { (i === 'new') ?
+                        { (i === 1) ?
                             <button onClick={this._onSubClick}>Submit</button>
-                        : (i === 'del') ?
+                        : (i === 2) ?
                             <button onClick={this._onDelClick}>Delete</button>
                         :
                          <button onClick={this._onEditIdClick}>Edit</button>
@@ -415,7 +417,7 @@ class List extends React.Component {
             showPreview: false,
             showOnlyDelete: false,
             showPop: true,
-            looper: true,
+            looperOne: true,
             nooper: true,
             showAllEdit: false,
             showChange: false,
@@ -433,7 +435,7 @@ class List extends React.Component {
             showOnlyDelete: false,
             showPreview: false,
             showChange: false,
-            looper: true,
+            looperDel: true,
             nooper: true,
             showDel: true,
             myId: ''
@@ -457,7 +459,7 @@ class List extends React.Component {
             newPostBody: '',
             newPostUserId: '',
             showFill: false,
-            looper: true,
+            looperEdit: true,
             showOk: false
         });
     }
@@ -488,7 +490,7 @@ class List extends React.Component {
             newPostTitle: '',
             newPostBody: '',
             newPostUserId: '',
-            looper: true,
+            looperEdit: true,
             nooper: true
         });
         this.renderPostForEdit(this.state.myId) 
@@ -591,7 +593,7 @@ class List extends React.Component {
                         null
                     }
                     {this.state.showPop ?
-                        this.getId('new') :
+                        this.getId(1) :
                         null
                     }
                     {this.state.showSub ?
@@ -611,11 +613,11 @@ class List extends React.Component {
                         null
                     }
                     {this.state.showDel ?
-                        this.getId('del') :
+                        this.getId(2) :
                         null
                     }
                     {this.state.showEdit ?
-                        this.getId('edit') :
+                        this.getId(3) :
                         null
                     }
                     {this.state.showChange ?
